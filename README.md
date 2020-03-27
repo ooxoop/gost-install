@@ -1,4 +1,7 @@
 # gost-install
+### Centos / Ubuntu / Debian
+#### 使用环境：python3
+```
 gost 一键安装管理脚本beta 
  -- 四分体 | sifenti.com --
 
@@ -15,3 +18,4 @@ gost 一键安装管理脚本beta
  8. 打开 配置文件
  9. 日志 输出日志
 ————————————————————————
+```
