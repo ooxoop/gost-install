@@ -1,0 +1,10 @@
+{
+    "Debug": true,
+    "Retries": 3,
+    "ServeNodes": [
+        ":8080"
+    ],
+    "ChainNodes": [
+        ""
+    ]
+}
