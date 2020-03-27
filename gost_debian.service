@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/gost
 
 ### BEGIN INIT INFO
 # Provides:          gost is a proxyer
@@ -12,7 +12,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 ### END INIT INFO
 
 NAME="gost"
-CONFIG="/root/.gost/gost.conf"
+CONFIG="/root/.gost/config.json"
 LOG="/root/.gost/gost.log"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
