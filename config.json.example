@@ -2,9 +2,9 @@
     "Debug": true,
     "Retries": 3,
     "ServeNodes": [
-        ":6666"
+        ":8080"
     ],
     "ChainNodes": [
-        ":16666"
+        ""
     ]
 }
