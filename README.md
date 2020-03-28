@@ -1,5 +1,9 @@
 # gost-install
 ### Centos / Ubuntu / Debian
+#### 下载/运行
+```
+wget --no-check-certificate -O gost.sh https://raw.githubusercontent.com/ooxoop/gost-install/master/gost.sh && bash gost.sh
+```
 #### 使用环境：python3
 ```
 gost 一键安装管理脚本beta 
