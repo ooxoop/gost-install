@@ -113,48 +113,111 @@ service_gost(){
 	echo -e "${Info} gost服务 管理脚本安装完毕 !"
 }
 
-config_gost_param(){
+config_gost_l(){
+	echo -e "请选择你要进行的操作 
+
+${Green_font_prefix}1.${Font_color_suffix} 清除并重新设置 -L参数
+${Green_font_prefix}2.${Font_color_suffix} 增加 -L参数" && echo
+	read -e -p "(默认：取消) " l_code
+	[[ -z "${l_code}" ]] && l_code="0"
+	if [[ ${l_code} == "1" ]]; then
+		if [ `grep -c "ServeNodes" /root/.gost/config.json` -eq '0' ]; then
+			echo "配置文件中ServeNodes不存在"
+		else
+			python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));del j['ServeNodes'];json.dump(j,open(\"/root/.gost/config.json\",'w'))"
+			config_gost_l_add
+		fi
+	elif [[ ${l_code} == "2" ]]; then
+		config_gost_l_add
+	else
+		exit 1
+	fi
+	echo -e "${Info} -L参数 已设置完毕"
+}
+
+config_gost_f(){
+	echo -e "请选择你要进行的操作 
+
+${Green_font_prefix}1.${Font_color_suffix} 清除并重新设置 -F参数
+${Green_font_prefix}2.${Font_color_suffix} 增加 -F参数
+${Green_font_prefix}3.${Font_color_suffix} 不使用 -F参数" && echo
+	read -e -p "(默认：取消) " f_code
+	[[ -z "${f_code}" ]] && f_code="0"
+	if [[ ${f_code} == "1" ]]; then
+		if [ `grep -c "ChainNodes" /root/.gost/config.json` -eq '0' ]; then
+			echo "配置文件中ChainNodes不存在"
+		else
+			python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));del j['ChainNodes'];json.dump(j,open(\"/root/.gost/config.json\",'w'))"
+			config_gost_f_add
+		fi
+	elif [[ ${f_code} == "2" ]]; then
+		config_gost_f_add
+	elif [[ ${f_code} == "3" ]]; then
+		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));del j['ChainNodes'];json.dump(j,open(\"/root/.gost/config.json\",'w'))"
+	else
+		exit 1
+	fi
+}
+
+config_gost_l_add(){
 	echo -e "请输入 -L 参数"
 	read -e -p "(默认 - [tcp://:6666]): " param_l
 	[[ -z "$param_l" ]] && param_l="tcp://:6666"
-	echo -e "是否设置 -F 参数 (0:不设置/1:设置)"
-	read -e -p "默认：不设置 " config_code
-	[[ -z "${config_code}" ]] && config_code="0"
-	if [[ ${config_code} == "1" ]]; then
-		echo -e "请输入 -F 参数"
-		read -e -p "(默认 - [:16666]): " param_f
-		[[ -z "$param_f" ]] && param_f=":16666"
-		if [ `grep -c "ChainNodes" /root/.gost/config.json` -eq '0' ]; then
-			python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));j['ServeNodes'][0] = \"$param_l\";a = {'ChainNodes':['$param_f']};j.update(a);json.dump(j,open(\"/root/.gost/config.json\",'w'))"
-		else
-			python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));j['ServeNodes'][0] = \"$param_l\";j['ChainNodes'][0] = \"$param_f\";json.dump(j,open(\"/root/.gost/config.json\",'w'))"	
-		fi
+	if [ `grep -c "ServeNodes" /root/.gost/config.json` -eq '0' ]; then
+		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));a = {'ServeNodes':['$param_l']};j.update(a);print (j['ServeNodes']);json.dump(j,open(\"/root/.gost/config.json\",'w'))" && echo -e "${Info} 配置更新成功"
 	else
-		if [ `grep -c "ChainNodes" /root/.gost/config.json` -eq '0' ]; then
-			python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));j['ServeNodes'][0] = \"$param_l\";json.dump(j,open(\"/root/.gost/config.json\",'w'))"
-		else
-			python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));j['ServeNodes'][0] = \"$param_l\";del j['ChainNodes'];json.dump(j,open(\"/root/.gost/config.json\",'w'))"	
-		fi
+		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));j['ServeNodes'].append( \"$param_l\");print (j['ServeNodes']);json.dump(j,open(\"/root/.gost/config.json\",'w'))" && echo -e "${Info} 配置更新成功"
 	fi
-	
+	echo -e "是否继续添加 -L 参数 (0:取消/1:继续)"
+	read -e -p "(默认：取消) " l_add_code
+	[[ -z "${l_add_code}" ]] && l_add_code="0"
+	if [[ ${l_add_code} == "1" ]]; then
+		param_l="tcp://:6666"
+		config_gost_l_add
+	fi
+}
+
+config_gost_f_add(){
+	echo -e "请输入 -F 参数"
+	read -e -p "(默认 - [tcp://:6666]): " param_f
+	[[ -z "$param_f" ]] && param_f="tcp://:6666"
+	if [ `grep -c "ChainNodes" /root/.gost/config.json` -eq '0' ]; then
+		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));a = {'ChainNodes':['$param_f']};j.update(a);print (j['ServeNodes']);json.dump(j,open(\"/root/.gost/config.json\",'w'))" && echo -e "${Info} 配置更新成功"
+	else
+		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));j['ChainNodes'].append( \"$param_f\");print (j['ServeNodes']);json.dump(j,open(\"/root/.gost/config.json\",'w'))" && echo -e "${Info} 配置更新成功"
+	fi
+	echo -e "是否继续添加 -F 参数 (0:取消/1:继续)"
+	read -e -p "(默认：取消) " f_add_code
+	[[ -z "${f_add_code}" ]] && f_add_code="0"
+	if [[ ${f_add_code} == "1" ]]; then
+		param_f="tcp://:6666"
+		config_gost_f_add
+	fi
 }
 
 View_config(){
+	echo -e "${Info} -L参数为"
+	python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));print (j['ServeNodes'])"
 	if [ `grep -c "ChainNodes" /root/.gost/config.json` -eq '0' ]; then
-		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));print (\"[Config] -L参数为 -\",j['ServeNodes'][0])"
+		exit 1
 	else
-		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));print (\"[Config] -L参数为 -\",j['ServeNodes'][0]);print (\"[Config] -F参数为 -\",j['ChainNodes'][0])"
+		echo -e "${Info} -F参数为"
+		python3 -c "import json;j = (json.load(open(\"/root/.gost/config.json\",'r')));print (j['ChainNodes'])" 
 	fi
 }
 
 Set_config(){
 	echo && echo -e "gost 配置菜单
 ————————————————————————
-${Green_font_prefix}1.${Font_color_suffix} 设置-L/-F参数" && echo
-	read -e -p "默认：取消 " config_code
+${Green_font_prefix}1.${Font_color_suffix} 设置-L参数
+${Green_font_prefix}2.${Font_color_suffix} 设置-F参数" && echo
+	read -e -p "(默认：取消) " config_code
 	[[ -z "${config_code}" ]] && config_code="0"
 	if [[ ${config_code} == "1" ]]; then
-		config_gost_param
+		config_gost_l
+		Restart_gost
+	elif [[ ${config_code} == "2" ]]; then
+		config_gost_f
 		Restart_gost
 	else
 		exit 1
